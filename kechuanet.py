@@ -278,38 +278,38 @@ else:
     net.to(device)
     print('Loaded!')
 
-n = 1
-img = augmentation_imgs[n]
-gt = augmentation_gts[n]
-img = img / img.max()
-diff = crop_size // 2 - mini_crop_size // 2
-layer = 72
-pred_layer = layer - 32 + mini_crop_size // 2
-_, max_y, max_z = img.shape
-preds = np.zeros_like(img[0])
-coef = np.zeros_like(img[0])
-kernel = gkern(mini_crop_size, 5)
-batch = []
-for i in tqdm(range(0, max_z - crop_size, 3)):
-    for j in range(0, max_y - crop_size, 3):
-      pred_j = j + diff 
-      pred_i = i + diff
-      vis_x, vis_y = crop(img, gt, crop_size, mini_crop_size, (pred_layer, j, i))  
-      pred_y = vis_y
-      pred_y = net(torch.Tensor(vis_x[None,None,:,:,:]).to(device))[0,0].data.cpu().numpy()      
-      preds[pred_j:pred_j + mini_crop_size, pred_i: pred_i + mini_crop_size] += pred_y[0] * 1
+# n = 1
+# img = augmentation_imgs[n]
+# gt = augmentation_gts[n]
+# img = img / img.max()
+# diff = crop_size // 2 - mini_crop_size // 2
+# layer = 72
+# pred_layer = layer - 32 + mini_crop_size // 2
+# _, max_y, max_z = img.shape
+# preds = np.zeros_like(img[0])
+# coef = np.zeros_like(img[0])
+# kernel = gkern(mini_crop_size, 5)
+# batch = []
+# for i in tqdm(range(0, max_z - crop_size, 3)):
+    # for j in range(0, max_y - crop_size, 3):
+      # pred_j = j + diff 
+      # pred_i = i + diff
+      # vis_x, vis_y = crop(img, gt, crop_size, mini_crop_size, (pred_layer, j, i))  
+      # pred_y = vis_y
+      # pred_y = net(torch.Tensor(vis_x[None,None,:,:,:]).to(device))[0,0].data.cpu().numpy()      
+      # preds[pred_j:pred_j + mini_crop_size, pred_i: pred_i + mini_crop_size] += pred_y[0] * 1
       
-      coef[pred_j:pred_j + mini_crop_size, pred_i: pred_i + mini_crop_size] += 1
+#       coef[pred_j:pred_j + mini_crop_size, pred_i: pred_i + mini_crop_size] += 1
 
-coef[coef == 0] = 1
-preds = np.array(preds)
+# coef[coef == 0] = 1
+# preds = np.array(preds)
 
-fig, (pred_axis, gt_axis) = plt.subplots(1, 2, figsize=(15,7))
-pred_img = (preds / coef) > 0.5
-pred_axis.imshow(pred_img)
-pred_axis.set_title('Prediction')
+# fig, (pred_axis, gt_axis) = plt.subplots(1, 2, figsize=(15,7))
+# pred_img = (preds / coef) > 0.5
+# pred_axis.imshow(pred_img)
+# pred_axis.set_title('Prediction')
 
-gt_axis.imshow(gt[layer])
-gt_axis.set_title('Target');
+# gt_axis.imshow(gt[layer])
+# gt_axis.set_title('Target');
 # (preds != gt[layer]).sum()
-dc(pred_img, gt[layer]), np.allclose(pred_img, gt[layer])
+# dc(pred_img, gt[layer]), np.allclose(pred_img, gt[layer])
