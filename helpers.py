@@ -1,11 +1,19 @@
 import nibabel as nib
 import numpy as np
+import torch
+from tqdm import tqdm
 
 
 def loader(path):
     data = nib.load(path)
     img = data.get_fdata()
     return img
+
+
+def get_gt_filename(img_filename):
+    comma_idx = img_filename.find('.')
+    gt_file_name = img_filename[:comma_idx] + '_ss' + img_filename[comma_idx:]
+    return gt_file_name
 
 
 def crop(img, gt, voxes_size, mini_voxel_size, start_coordinates):
@@ -53,3 +61,33 @@ def augmentation(imgs, gts):
         )
 
     return imgs + augmentation_imgs, gts + augmentation_gts
+
+
+def predict_full(net, img, thr=0.5, crop_size=65, mini_crop_size=7, device=torch.device('cpu'), padding=15):
+    pad = ((padding, padding), (padding, padding), (padding, padding))
+    img = np.pad(img, pad)
+
+    img = img / img.max()
+    diff = crop_size // 2 - mini_crop_size // 2
+
+    max_x, max_y, max_z = img.shape
+    preds = np.zeros_like(img)
+    coef = np.zeros_like(img)
+
+    for z in tqdm(range(0, max_z - crop_size, 7)):
+        pred_z = z + diff
+        for y in range(0, max_y - crop_size, 7):
+            pred_y = y + diff
+            for x in range(0, max_x - crop_size, 7):
+                pred_x = x + diff
+                vis_x, _ = crop(img, img, crop_size, mini_crop_size, (x, y, z))
+                output = net(torch.Tensor(vis_x[None, None, :, :, :]).to(device))[0, 0].data.cpu().numpy()
+                preds[pred_x:pred_x + mini_crop_size, pred_y:pred_y + mini_crop_size,
+                pred_z: pred_z + mini_crop_size] += output
+
+                coef[pred_x:pred_x + mini_crop_size, pred_y:pred_y + mini_crop_size,
+                pred_z: pred_z + mini_crop_size] += 1
+
+    coef[coef == 0] = 1
+    preds = np.array(preds)
+    return (preds / coef) > thr
