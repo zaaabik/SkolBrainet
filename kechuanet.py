@@ -24,7 +24,7 @@ import os
 import re
 from copy import deepcopy
 import pandas as pd
-from tqdm  import tqdm
+from tqdm import tqdm
 from scipy import signal
 
 ######### PARAMETERS 
@@ -241,7 +241,7 @@ optimizer = optim.Adam(net.parameters(), lr=lr)  # lr = 1e-5 in the original pap
 
 augmentation_imgs, augmentation_gts = augmentation(imgs, gts)
 mri_dataset = MriDataset(augmentation_imgs, augmentation_gts, crop_size, mini_crop_size, crops_per_image, crop_function=crop)
-mri_dataset[len(mri_dataset) - 1]
+# mri_dataset[len(mri_dataset) - 1]
 mri_dataloader = data.DataLoader(mri_dataset, batch_size)
 assert len(mri_dataset) == len(augmentation_imgs) * crops_per_image
 print(len(mri_dataset))
