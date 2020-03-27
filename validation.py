@@ -1,6 +1,8 @@
 import os
 
+import numpy as np
 import torch
+from medpy.metric import dc
 from torch import nn, optim
 
 from Net import Net
@@ -65,16 +67,13 @@ net.load_state_dict(torch.load(model_filename, map_location=device))
 net.to(device)
 print('Loaded!')
 
-full_predict = predict_full(net, imgs[0], thr=0.5, crop_size=crop_size, mini_crop_size=mini_crop_size, device=device,
-                            padding=15)
+padding = crop_size // 2
+pad = ((padding, padding), (padding, padding), (padding, padding))
+padded_img = np.pad(imgs[0], pad)
+padded_gt = np.pad(gts[0], pad)
 
-# gt = np.pad(gt, pad)
-# fig, (pred_axis, gt_axis) = plt.subplots(1, 2, figsize=(15, 7))
-# pred_img = (preds / coef) > 0.5
-# pred_axis.imshow(pred_img)
-# pred_axis.set_title('Prediction')
-#
-# gt_axis.imshow(gt[layer])
-# gt_axis.set_title('Target');
-# (preds != gt[layer]).sum()
-# dc(pred_img, gt[layer]), np.allclose(pred_img, gt[layer])
+full_predict = predict_full(net, padded_img, crop_size=crop_size, mini_crop_size=mini_crop_size,
+                            thr=0.5,
+                            step_size=7,
+                            device=device)
+print(dc(full_predict, padded_gt))
