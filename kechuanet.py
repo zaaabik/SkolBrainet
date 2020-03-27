@@ -25,13 +25,12 @@ import re
 from copy import deepcopy
 import pandas as pd
 from tqdm  import tqdm
-from medpy.metric.binary import dc
 from scipy import signal
 
 ######### PARAMETERS 
 
-gt_base_path = 'gt'
-img_base_path = 'img'
+gt_base_path = 'Silver-standard-ML'
+img_base_path = 'Original'
 
 ######### PARAMETERS 
 train = True
