@@ -76,4 +76,6 @@ full_predict = predict_full(net, padded_img, crop_size=crop_size, mini_crop_size
                             thr=0.5,
                             step_size=7,
                             device=device)
+
+np.save('test_predict.npy', full_predict)
 print(dc(full_predict, padded_gt))
