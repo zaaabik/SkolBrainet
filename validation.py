@@ -4,6 +4,7 @@ import numpy as np
 import torch
 from medpy.metric import dc
 from torch import nn, optim
+from tqdm import tqdm
 
 from Net import Net
 from helpers import predict_full, get_gt_filename, loader
@@ -81,7 +82,7 @@ print('Loaded!')
 padding = crop_size // 2
 pad = ((padding, padding), (padding, padding), (padding, padding))
 
-for i in range(len(imgs)):
+for i in tqdm(range(len(imgs))):
     print('Working with scan' + img_filenames[i])
 
     padded_img = np.pad(imgs[i], pad)

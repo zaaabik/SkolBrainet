@@ -71,7 +71,7 @@ def predict_full(net, img, thr=0.5, crop_size=65, mini_crop_size=7, device=torch
     preds = np.zeros_like(img)
     coef = np.zeros_like(img)
 
-    for z in tqdm(range(0, max_z - crop_size, step_size)):
+    for z in range(0, max_z - crop_size, step_size):
         pred_z = z + diff
         for y in range(0, max_y - crop_size, step_size):
             pred_y = y + diff
