@@ -1,5 +1,5 @@
 import os
-
+import nibabel as nib
 import numpy as np
 import torch
 from medpy.metric import dc
@@ -24,7 +24,16 @@ index_reg_exp = 'CC(.*?)_'
 
 img_filenames = []
 for file_name in raw_img_filenames:
-    if file_name[2:6] == '0060':
+
+    # here I am testing that step along each axis (x,y,z) is nearly equal to 1. Otherwise
+    # prediction is not viable unless the scan was preliminary rescaled (!!!To Be Done!!!)
+    img = nib.load(path)
+    tolL = 0.999
+    tolH = 1.001
+    x_step = img.header['pixdim'][1]
+    y_step = img.header['pixdim'][2]
+    z_step = img.header['pixdim'][3]
+    if tolL < x < tolH and tolL < y < tolH and tolL < z < tolH:
         img_filenames.append(file_name)
 
 gt_filenames = []
@@ -72,6 +81,7 @@ padding = crop_size // 2
 pad = ((padding, padding), (padding, padding), (padding, padding))
 
 for i in range(len(imgs)):
+    print('Working with scan' + img_filenames[i])
 
     padded_img = np.pad(imgs[i], pad)
     padded_gt = np.pad(gts[i], pad)
