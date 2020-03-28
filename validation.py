@@ -34,7 +34,7 @@ for file_name in raw_img_filenames:
     x_step = img.header['pixdim'][1]
     y_step = img.header['pixdim'][2]
     z_step = img.header['pixdim'][3]
-    if tolL < x < tolH and tolL < y < tolH and tolL < z < tolH:
+    if tolL < x_step < tolH and tolL < y_step < tolH and tolL < z_step < tolH:
         img_filenames.append(file_name)
 
 gt_filenames = []
