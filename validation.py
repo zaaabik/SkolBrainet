@@ -10,7 +10,7 @@ from helpers import predict_full, get_gt_filename, loader
 
 gt_base_path = '/nmnt/media/home/kechua/CC-359-dataset/Silver-standard-ML'
 img_base_path = '/nmnt/media/home/kechua/CC-359-dataset/Original'
-model_filename = os.path.join('models', 'model_epoch_093')
+model_filename = os.path.join('models/v2', 'model_epoch_093')
 
 ######### PARAMETERS
 
