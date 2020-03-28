@@ -70,14 +70,17 @@ print('Loaded!')
 
 padding = crop_size // 2
 pad = ((padding, padding), (padding, padding), (padding, padding))
-padded_img = np.pad(imgs[0], pad)
-padded_gt = np.pad(gts[0], pad)
 
-full_predict = predict_full(net, padded_img, crop_size=crop_size, mini_crop_size=mini_crop_size,
-                            thr=0.5,
-                            step_size=7,
-                            device=device)
+for i in range(len(imgs)):
+
+    padded_img = np.pad(imgs[i], pad)
+    padded_gt = np.pad(gts[i], pad)
+
+    full_predict = predict_full(net, padded_img, crop_size=crop_size, mini_crop_size=mini_crop_size,
+                                thr=0.5,
+                                step_size=7,
+                                device=device)
 
 
-np.save('predictions/test_predict.npy', full_predict)
-print(dc(full_predict, padded_gt))
+    np.save('predictions/test_predict_' + img_filenames[i][:-7] + '.npy', full_predict)
+    print(dc(full_predict, padded_gt))
