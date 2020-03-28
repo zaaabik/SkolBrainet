@@ -70,7 +70,7 @@ print('Loaded!')
 padding = crop_size // 2
 pad = ((padding, padding), (padding, padding), (padding, padding))
 padded_img = np.pad(imgs[0], pad)
-padded_gt = np.pad(gts[0], pad)
+padded_gt = np.pad(gts[0], pad;)
 
 full_predict = predict_full(net, padded_img, crop_size=crop_size, mini_crop_size=mini_crop_size,
                             thr=0.5,
