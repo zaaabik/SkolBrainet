@@ -8,9 +8,9 @@ from torch import nn, optim
 from Net import Net
 from helpers import predict_full, get_gt_filename, loader
 
-gt_base_path = 'domain_gt'
-img_base_path = 'domain_img'
-model_filename = os.path.join('models', 'model_epoch_060')
+gt_base_path = '/nmnt/media/home/kechua/CC-359-dataset/Silver-standard-ML'
+img_base_path = '/nmnt/media/home/kechua/CC-359-dataset/Original'
+model_filename = os.path.join('models', 'model_epoch_093')
 
 ######### PARAMETERS
 
@@ -24,7 +24,8 @@ index_reg_exp = 'CC(.*?)_'
 
 img_filenames = []
 for file_name in raw_img_filenames:
-    img_filenames.append(file_name)
+    if file_name[2:5] == '0060':
+        img_filenames.append(file_name)
 
 gt_filenames = []
 for img_filename in img_filenames:
