@@ -27,7 +27,8 @@ for file_name in raw_img_filenames:
 
     # here I am testing that step along each axis (x,y,z) is nearly equal to 1. Otherwise
     # prediction is not viable unless the scan was preliminary rescaled (!!!To Be Done!!!)
-    img = nib.load(file_name)
+    img_path = os.path.join(img_base_path, file_name)
+    img = nib.load(img_path)
     tolL = 0.999
     tolH = 1.001
     x_step = img.header['pixdim'][1]
