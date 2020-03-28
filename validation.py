@@ -24,6 +24,7 @@ index_reg_exp = 'CC(.*?)_'
 
 img_filenames = []
 for file_name in raw_img_filenames:
+    print(file_name)
     if file_name[2:5] == '0060':
         img_filenames.append(file_name)
 
