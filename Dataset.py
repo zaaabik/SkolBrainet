@@ -48,6 +48,6 @@ class MriDataset(data.Dataset):
         crop = self.crops[idx]
         img = self.X[self.img_idxs[idx]]
         gt = self.y[self.img_idxs[idx]]
-        x, y = self.crop_function(img, gt, self.crop_size, self.mini_crop_size, crop)
+        x, y = self.crop_function(img, gt,
 
         return torch.Tensor(x[None, :, :, :]), torch.Tensor(y[None, :, :, :])
