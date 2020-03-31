@@ -6,6 +6,18 @@ import pandas as pd
 
 DOMAIN_REG_EP = r'_(.*?_\d+)_'
 
+max_idx = 169
+min_idx = 120
+index_reg_exp = 'CC(.*?)_'
+
+
+def is_train(file_name):
+    index = re.findall(index_reg_exp, file_name)[0]
+    index = int(index)
+    if min_idx <= index <= max_idx:
+        return True
+    return False
+
 
 def create_labels(img_path, out):
     files = os.listdir(img_path)
@@ -22,6 +34,9 @@ def create_labels(img_path, out):
             'Domain': domains
         }
     )
+
+    labels_df['Labeled'] = labels_df['Filename'].apply(is_train)
+
     out_path = os.path.join(out, 'labels.csv')
     labels_df.to_csv(out_path, index=None)
 
