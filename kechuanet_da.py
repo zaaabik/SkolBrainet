@@ -17,6 +17,7 @@ img_base_path = 'da_img/'
 labels_path = 'labels.csv'
 labled_domain = 'siemens_15'
 
+alpha = 1
 batch_size = 4
 epochs = 100000000
 crops_per_image = 250
@@ -230,7 +231,6 @@ if torch.cuda.is_available():
 if not os.path.exists('models'):
     os.mkdir('models')
 
-alpha = 1
 net = DANet(alpha).to(device)
 
 segmentation_criterion = nn.BCELoss(reduction='none')
