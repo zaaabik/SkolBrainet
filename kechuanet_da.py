@@ -223,4 +223,4 @@ for epoch in range(epochs):
         'Segmentation loss': total_segmentation_losses,
         'Classification loss': total_classification_losses
     })
-    loss_df.to_csv(os.path.join(models_save_path;, 'loss_da.csv'), index='Epoch')
+    loss_df.to_csv(os.path.join(models_save_path, 'loss_da.csv'), index='Epoch')
