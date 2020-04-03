@@ -1,7 +1,7 @@
 import argparse
 import os
 import re
-
+import numpy as np
 import pandas as pd
 
 DOMAIN_REG_EP = r'_(.*?_\d+)_'
@@ -19,22 +19,40 @@ def is_train(file_name):
     return False
 
 
-def create_labels(img_path, out):
-    files = os.listdir(img_path)
+def inTestSet (name):
+    # Here I specify the test domain
+    N = int(name[2:6])
+    Ph15_t = np.arange(50,60)
+    Ph3_t = np.arange(110,120)
+    S15_t = np.arange(170,180)
+    S3_t = np.arange(230,240)
+    GE15_t = np.arange(290,300)
+    GE3_t = np.arange(350, 360)
+    test_scans = np.concatenate((Ph15_t, Ph3_t, S15_t, S3_t, GE15_t, GE3_t))
+    if N in test_scans:
+        return True
+    else:
+        return False
 
+
+def create_labels(img_path, out):
+    files_all = os.listdir(img_path)
+    files_train = []
     domains = []
-    for file in files:
-        domains.append(
-            re.findall(DOMAIN_REG_EP, file)[0]
-        )
+    for file in files_all:
+        if not inTestSet(file):
+            files_train.append(file)
+            domains.append(
+                re.findall(DOMAIN_REG_EP, file)[0]
+            )
 
     labels_df = pd.DataFrame(
         {
-            'Filename': files,
+            'Filename': files_train,
             'Domain': domains
         }
     )
-
+    labels_df = pd.DataFrame.sort_values(labels_df, by='Filename')
     labels_df['Labeled'] = labels_df['Filename'].apply(is_train)
 
     out_path = os.path.join(out, 'labels.csv')

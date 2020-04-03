@@ -12,8 +12,12 @@ from tqdm import tqdm
 ######### PARAMETERS
 from Net import DANet
 
-gt_base_path = 'da_gt/'
-img_base_path = 'da_img/'
+# gt_base_path = 'da_gt/'
+# img_base_path = 'da_img/'
+
+gt_base_path = '/nmnt/media/home/kechua/CC-359-dataset/Silver-standard-ML/'
+img_base_path = '/nmnt/media/home/kechua/CC-359-dataset/originalScaled/'
+
 labels_path = 'labels.csv'
 labled_domain = 'siemens_15'
 
@@ -48,13 +52,13 @@ unlabled_img_cat = unlabled_df.Domain.values
 labled_gt_filenames = []
 for img_filename in labled_img_filenames:
     comma_idx = img_filename.find('.')
-    gt_file_name = img_filename[:comma_idx] + '_ss' + img_filename[comma_idx:]
+    gt_file_name = img_filename[:comma_idx] + '_ss' + '.nii.gz'
     labled_gt_filenames.append(gt_file_name)
 
 unlabled_gt_filenames = []
 for img_filename in unlabled_img_filenames:
     comma_idx = img_filename.find('.')
-    gt_file_name = img_filename[:comma_idx] + '_ss' + img_filename[comma_idx:]
+    gt_file_name = img_filename[:comma_idx] + '_ss' + '.nii.gz'
     unlabled_gt_filenames.append(gt_file_name)
 
 print(f'Labled count {len(labled_img_filenames)} Unlabled {len(unlabled_img_filenames)}', flush=True)
@@ -63,6 +67,10 @@ print(f'Labled count {len(labled_img_filenames)} Unlabled {len(unlabled_img_file
 def loader(path):
     data = nib.load(path)
     img = data.get_fdata()
+    return img
+
+def loader_np(path):
+    img = np.load(path)
     return img
 
 
@@ -74,7 +82,7 @@ for img_filename, gt_filename in zip(labled_img_filenames, labled_gt_filenames):
     img_path = os.path.join(img_base_path, img_filename)
 
     gt = loader(gt_path)
-    img = loader(img_path)
+    img = loader_np(img_path)
 
     labled_imgs.append(img)
     labled_gts.append(gt)
@@ -85,7 +93,7 @@ unlabled_gts = []
 for img_filename in unlabled_img_filenames:
     img_path = os.path.join(img_base_path, img_filename)
 
-    img = loader(img_path)
+    img = loader_np(img_path)
     # zeros!
     gt = np.zeros_like(img)
 
@@ -201,7 +209,7 @@ for img_filename, gt_filename in zip(unlabled_img_filenames, unlabled_gt_filenam
     img_path = os.path.join(img_base_path, img_filename)
     gt_path = os.path.join(gt_base_path, gt_filename)
 
-    img = loader(img_path)
+    img = loader_np(img_path)
     gt = loader(gt_path)
 
     validation_imgs.append(img)
@@ -223,106 +231,105 @@ def validate(model, dataloader):
     return np.mean(losses)
 
 
-def learn_nn ():
-    device = torch.device('cpu')
-    if torch.cuda.is_available():
-        print('GPU !!!')
-        device = torch.device('cuda:0')
+device = torch.device('cpu')
+if torch.cuda.is_available():
+    print('GPU !!!')
+    device = torch.device('cuda:0')
 
-    if not os.path.exists('models'):
-        os.mkdir('models')
+if not os.path.exists('models'):
+    os.mkdir('models')
 
-    net = DANet(alpha).to(device)
+net = DANet(alpha).to(device)
 
-    segmentation_criterion = nn.BCELoss(reduction='none')
-    classification_criterion = nn.CrossEntropyLoss()
+segmentation_criterion = nn.BCELoss(reduction='none')
+classification_criterion = nn.CrossEntropyLoss()
 
-    optimizer = optim.Adam(net.parameters(), lr=lr)  # lr = 1e-5 in the original paper
+optimizer = optim.Adam(net.parameters(), lr=lr)  # lr = 1e-5 in the original paper
 
-    labled_augmentation_imgs, labled_augmentation_gts = augmentation(labled_imgs, labled_gts)
-    labled_augmentation_img_cat = np.repeat(labled_img_cat, 2)
+labled_augmentation_imgs, labled_augmentation_gts = augmentation(labled_imgs, labled_gts)
+labled_augmentation_img_cat = np.repeat(labled_img_cat, 2)
 
-    unlabled_augmentation_imgs, unlabled_augmentation_gts = augmentation(unlabled_imgs, unlabled_gts)
-    unlabled_augmentation_img_cat = np.repeat(unlabled_img_cat, 2)
+unlabled_augmentation_imgs, unlabled_augmentation_gts = augmentation(unlabled_imgs, unlabled_gts)
+unlabled_augmentation_img_cat = np.repeat(unlabled_img_cat, 2)
 
-    labled_mri_dataset = MriDataset(labled_augmentation_imgs, labled_augmentation_gts,
-                                    labled_augmentation_img_cat, crop_size, mini_crop_size,
-                                    crops_per_image, crop_function=crop)
+labled_mri_dataset = MriDataset(labled_augmentation_imgs, labled_augmentation_gts,
+                                labled_augmentation_img_cat, crop_size, mini_crop_size,
+                                crops_per_image, crop_function=crop)
 
-    labled_mri_dataloader = data.DataLoader(labled_mri_dataset, batch_size=batch_size, shuffle=True)
+labled_mri_dataloader = data.DataLoader(labled_mri_dataset, batch_size=batch_size, shuffle=True)
 
-    unlabeled_mri_dataset = MriDataset(unlabled_augmentation_imgs, unlabled_augmentation_gts,
-                                       unlabled_augmentation_img_cat, crop_size, mini_crop_size,
-                                       crops_per_image, crop_function=crop)
+unlabeled_mri_dataset = MriDataset(unlabled_augmentation_imgs, unlabled_augmentation_gts,
+                                   unlabled_augmentation_img_cat, crop_size, mini_crop_size,
+                                   crops_per_image, crop_function=crop)
 
-    unlabeled_mri_dataloader = data.DataLoader(unlabeled_mri_dataset, batch_size=batch_size, shuffle=True)
+unlabeled_mri_dataloader = data.DataLoader(unlabeled_mri_dataset, batch_size=categorical_batch_size, shuffle=True)
 
-    validate_dataset = MriDataset(validation_imgs, validation_gts,
-                                  np.zeros(len(validation_imgs)), crop_size, mini_crop_size,
-                                  1000, crop_function=crop)
+validate_dataset = MriDataset(validation_imgs, validation_gts,
+                              np.zeros(len(validation_imgs)), crop_size, mini_crop_size,
+                              1000, crop_function=crop)
 
-    validate_dataloader = data.DataLoader(validate_dataset, batch_size=batch_size, shuffle=True)
+validate_dataloader = data.DataLoader(validate_dataset, batch_size=batch_size, shuffle=True)
 
-    total_segmentation_losses = []
-    total_classification_losses = []
-    total_validation_losses = []
-    for epoch in range(epochs):
-        segmentation_losses = []
-        classification_losses = []
-        net.train()
-        for (x, y, c), (unl_x, unl_y, unl_c) in tqdm(
-                zip(labled_mri_dataloader, unlabeled_mri_dataloader), total=len(labled_mri_dataloader),
-                desc=f'Epoch {epoch:03}'):
-            optimizer.zero_grad()
-            labled_data_size = len(x)
+total_segmentation_losses = []
+total_classification_losses = []
+total_validation_losses = []
+for epoch in range(epochs):
+    segmentation_losses = []
+    classification_losses = []
+    net.train()
+    for (x, y, c), (unl_x, unl_y, unl_c) in tqdm(
+            zip(labled_mri_dataloader, unlabeled_mri_dataloader), total=len(labled_mri_dataloader),
+            desc=f'Epoch {epoch:03}'):
+        optimizer.zero_grad()
+        labled_data_size = len(x)
 
-            full_x = torch.cat((x, unl_x)).to(device)
-            full_y = torch.cat((y, unl_y)).to(device)
-            full_c = torch.cat((c, unl_c)).to(device)
+        full_x = torch.cat((x, unl_x)).to(device)
+        full_y = torch.cat((y, unl_y)).to(device)
+        full_c = torch.cat((c, unl_c)).to(device)
 
-            segmentation, classification = net(full_x)
+        segmentation, classification = net(full_x)
 
-            segmentation_loss = segmentation_criterion(segmentation, full_y)
+        segmentation_loss = segmentation_criterion(segmentation, full_y)
 
-            # set loss to there for unlabled_data
-            segmentation_loss[labled_data_size:] = 0
-            segmentation_loss = segmentation_loss.mean()
+        # set loss to there for unlabled_data
+        segmentation_loss[labled_data_size:] = 0
+        segmentation_loss = segmentation_loss.mean()
 
-            classification_loss = classification_criterion(classification, full_c)
+        classification_loss = classification_criterion(classification, full_c)
 
-            total_loss = segmentation_loss + classification_loss
+        total_loss = segmentation_loss + classification_loss
 
-            segmentation_losses.append(
-                segmentation_loss.detach().cpu().item()
-            )
+        segmentation_losses.append(
+            segmentation_loss.detach().cpu().item()
+        )
 
-            classification_losses.append(
-                classification_loss.detach().cpu().item()
-            )
+        classification_losses.append(
+            classification_loss.detach().cpu().item()
+        )
 
-            total_loss.backward()
-            optimizer.step()
-            del full_x
-            del full_y
-            del full_c
-        if epoch % epochs_per_save == 0:
-            torch.save(net.state_dict(), os.path.join('models', f'model_epoch_{epoch:03}'))
+        total_loss.backward()
+        optimizer.step()
+        del full_x
+        del full_y
+        del full_c
+    if epoch % epochs_per_save == 0:
+        torch.save(net.state_dict(), os.path.join('da_v1/models', f'model_epoch_{epoch:03}'))
 
-        mean_segmentation_loss = np.mean(segmentation_losses)
-        mean_classification_losses = np.mean(classification_losses)
+    mean_segmentation_loss = np.mean(segmentation_losses)
+    mean_classification_losses = np.mean(classification_losses)
 
-        total_segmentation_losses.append(mean_segmentation_loss)
-        total_classification_losses.append(mean_classification_losses)
+    total_segmentation_losses.append(mean_segmentation_loss)
+    total_classification_losses.append(mean_classification_losses)
 
-        vall_loss = validate(net, validate_dataloader)
-        total_validation_losses.append(vall_loss)
-        net.eval()
-        print(
-            f'Epoch {epoch}: Segmetation loss {mean_segmentation_loss:.5f} Class loss {mean_classification_losses} Val loss : {vall_loss}',
-            flush=True)
-        loss_df = pd.DataFrame({
-            'Segmetation loss': total_segmentation_losses,
-            'Classification loss': total_classification_losses,
-            'Val loss': total_validation_losses
-        })
-        loss_df.to_csv('loss.csv', index='Epoch')
+    vall_loss = validate(net, validate_dataloader)
+    total_validation_losses.append(vall_loss)
+    net.eval()
+    print(
+        f'Epoch {epoch}: Segmetation loss {mean_segmentation_loss:.5f} Class loss {mean_classification_losses} Val loss : {vall_loss}',
+        flush=True)
+    loss_df = pd.DataFrame({
+        'Segmetation loss': total_segmentation_losses,
+        'Classification loss': total_classification_losses,
+        'Val loss': total_validation_losses
+    })
+    loss_df.to_csv('da_v1/models/loss_da.csv', index='Epoch')
