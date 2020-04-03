@@ -21,7 +21,7 @@ gt_base_path = '/nmnt/x3-hdd/data/DA/CC359/Silver-standard-MLScaled/'
 img_base_path = '/nmnt/x3-hdd/data/DA/CC359/originalScaled/'
 models_save_path = '/nmnt/x3-hdd/data/DA/CC359/models/da2'
 
-labels_path = 'labels.csv'
+labels_path = 'labels_small_ds.csv'
 labeled_domain = 'siemens_15'
 
 # for debugging !
@@ -167,6 +167,9 @@ total_classification_losses = []
 total_validation_losses = []
 
 net.train()
+print(f'Labeled batches {len(labeled_mri_dataloader)}', flush=True)
+print(f'Unlabeled batches {len(unlabeled_mri_dataloader)}', flush=True)
+
 for epoch in range(epochs):
     segmentation_losses = []
     classification_losses = []
