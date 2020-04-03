@@ -24,6 +24,9 @@ models_save_path = 'da_v1/models'
 labels_path = 'labels.csv'
 labeled_domain = 'siemens_15'
 
+# for debugging !
+max_files_count = 9999999
+
 alpha = 1
 batch_size = 4
 epochs = 100000000
@@ -46,11 +49,11 @@ labels_df.Domain = labels_df.Domain.cat.codes
 labeled_df = labels_df[labels_df['Labeled'] == True]
 unlabeled_df = labels_df[labels_df['Labeled'] == False]
 
-labeled_img_filenames = labeled_df.Filename.values
-labeled_img_cat = labeled_df.Domain.values
+labeled_img_filenames = labeled_df.Filename.values[:max_files_count]
+labeled_img_cat = labeled_df.Domain.values[:max_files_count]
 
-unlabeled_img_filenames = unlabeled_df.Filename.values
-unlabeled_img_cat = unlabeled_df.Domain.values
+unlabeled_img_filenames = unlabeled_df.Filename.values[:max_files_count]
+unlabeled_img_cat = unlabeled_df.Domain.values[:max_files_count]
 
 labeled_gt_filenames = []
 for img_filename in labeled_img_filenames:
