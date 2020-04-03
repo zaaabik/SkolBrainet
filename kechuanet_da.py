@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 from Dataset import MriDatasetWithDomain
 from Net import DANet
-from helpers import crop, augmentation, loader_np, loader
+from helpers import crop, augmentation, loader_np, loader, get_gt_filename
 
 ######### PARAMETERS
 
@@ -57,14 +57,12 @@ unlabeled_img_cat = unlabeled_df.Domain.values[:max_files_count]
 
 labeled_gt_filenames = []
 for img_filename in labeled_img_filenames:
-    comma_idx = img_filename.find('.')
-    gt_file_name = img_filename[:comma_idx] + '_ss' + '.nii.gz'
+    gt_file_name = get_gt_filename(img_filename)
     labeled_gt_filenames.append(gt_file_name)
 
 unlabeled_gt_filenames = []
 for img_filename in unlabeled_img_filenames:
-    comma_idx = img_filename.find('.')
-    gt_file_name = img_filename[:comma_idx] + '_ss' + '.nii.gz'
+    gt_file_name = get_gt_filename(img_filename)
     unlabeled_gt_filenames.append(gt_file_name)
 
 print(f'Labled count {len(labeled_img_filenames)} Unlabeled {len(unlabeled_img_filenames)}', flush=True)
