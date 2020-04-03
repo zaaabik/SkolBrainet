@@ -27,7 +27,7 @@ labeled_domain = 'siemens_15'
 alpha = 1
 batch_size = 4
 epochs = 100000000
-crops_per_image = 1
+crops_per_image = 250
 lr = 1e-5
 lmbd = 0.1
 epochs_per_save = 1
@@ -66,8 +66,8 @@ for img_filename in unlabeled_img_filenames:
 
 print(f'Labled count {len(labeled_img_filenames)} Unlabeled {len(unlabeled_img_filenames)}', flush=True)
 
-labled_imgs = []
-labled_gts = []
+labeled_imgs = []
+labeled_gts = []
 
 print('loading labeled images', flush=True)
 for img_filename, gt_filename in tqdm(zip(labeled_img_filenames, labeled_gt_filenames)):
@@ -77,8 +77,8 @@ for img_filename, gt_filename in tqdm(zip(labeled_img_filenames, labeled_gt_file
     gt = loader(gt_path)
     img = loader_np(img_path)
 
-    labled_imgs.append(img)
-    labled_gts.append(gt)
+    labeled_imgs.append(img)
+    labeled_gts.append(gt)
 
 unlabled_imgs = []
 unlabled_gts = []
@@ -127,8 +127,8 @@ if torch.cuda.is_available():
     print('GPU !!!', flush=True)
     device = torch.device('cuda:0')
 
-if not os.path.exists('models'):
-    os.mkdir('models')
+if not os.path.exists(models_save_path):
+    os.makedirs(models_save_path)
 
 net = DANet(alpha).to(device)
 
@@ -137,7 +137,7 @@ classification_criterion = nn.CrossEntropyLoss()
 
 optimizer = optim.Adam(net.parameters(), lr=lr)  # lr = 1e-5 in the original paper
 
-labeled_augmentation_imgs, labeled_augmentation_gts = augmentation(labled_imgs, labled_gts)
+labeled_augmentation_imgs, labeled_augmentation_gts = augmentation(labeled_imgs, labeled_gts)
 labeled_augmentation_img_cat = np.repeat(labeled_img_cat, 2)
 
 unlabeled_augmentation_imgs, unlabeled_augmentation_gts = augmentation(unlabled_imgs, unlabled_gts)
@@ -219,7 +219,7 @@ for epoch in range(epochs):
         f'Epoch {epoch}: Segmetation loss {mean_segmentation_loss:.5f} Class loss {mean_classification_losses}',
         flush=True)
     loss_df = pd.DataFrame({
-        'Segmetation loss': total_segmentation_losses,
+        'Segmentation loss': total_segmentation_losses,
         'Classification loss': total_classification_losses
     })
     loss_df.to_csv(os.path.join(models_save_path, 'loss_da.csv'), index='Epoch')
