@@ -17,9 +17,9 @@ from helpers import crop, augmentation, loader_np, loader, get_gt_filename
 # gt_base_path = 'da_gt/'
 # img_base_path = 'da_img/'
 
-gt_base_path = '/nmnt/x3-hdd/data/DA/CC359/Silver-standard-ML/'
-img_base_path = '/nmnt/x3-hdd/data/DA/CC359/Original/'
-models_save_path = '/nmnt/x3-hdd/data/DA/CC359/models/da1'
+gt_base_path = '/nmnt/x3-hdd/data/DA/CC359/Silver-standard-MLScaled/'
+img_base_path = '/nmnt/x3-hdd/data/DA/CC359/originalScaled/'
+models_save_path = '/nmnt/x3-hdd/data/DA/CC359/models/da2'
 
 labels_path = 'labels.csv'
 labeled_domain = 'siemens_15'
@@ -75,7 +75,7 @@ for img_filename, gt_filename in tqdm(zip(labeled_img_filenames, labeled_gt_file
     gt_path = os.path.join(gt_base_path, gt_filename)
     img_path = os.path.join(img_base_path, img_filename)
 
-    gt = loader(gt_path)
+    gt = loader_np(gt_path)
     img = loader_np(img_path)
 
     labeled_imgs.append(img)
@@ -223,4 +223,4 @@ for epoch in range(epochs):
         'Segmentation loss': total_segmentation_losses,
         'Classification loss': total_classification_losses
     })
-    loss_df.to_csv(os.path.join(models_save_path;, 'loss_da.csv'), index='Epoch')
+    loss_df.to_csv(os.path.join(models_save_path, 'loss_da.csv'), index='Epoch')
