@@ -17,9 +17,9 @@ from helpers import crop, augmentation, loader_np, loader, get_gt_filename
 # gt_base_path = 'da_gt/'
 # img_base_path = 'da_img/'
 
-gt_base_path = '/nmnt/media/home/kechua/CC-359-dataset/Silver-standard-ML/'
-img_base_path = '/nmnt/media/home/kechua/CC-359-dataset/originalScaled/'
-models_save_path = 'da_v1/models'
+gt_base_path = '/nmnt/x3-hdd/data/DA/CC359/Silver-standard-ML/'
+img_base_path = '/nmnt/x3-hdd/data/DA/CC359/Original/'
+models_save_path = '/nmnt/x3-hdd/data/DA/CC359/models/da1'
 
 labels_path = 'labels.csv'
 labeled_domain = 'siemens_15'
@@ -223,4 +223,4 @@ for epoch in range(epochs):
         'Segmentation loss': total_segmentation_losses,
         'Classification loss': total_classification_losses
     })
-    loss_df.to_csv(os.path.join(models_save_path, 'loss_da.csv'), index='Epoch')
+    loss_df.to_csv(os.path.join(models_save_path;, 'loss_da.csv'), index='Epoch')

@@ -10,7 +10,12 @@ def loader(path):
 
 
 def loader_np(path):
-    img = np.load(path)
+    # img = np.load(path)
+
+    ## TO Remove
+    data = nib.load(path)
+    img = data.get_fdata()
+    ## TO Remove
     return img
 
 

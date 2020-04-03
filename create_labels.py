@@ -34,6 +34,9 @@ def inTestSet (name):
     else:
         return False
 
+def trueStep (name):
+
+
 
 def create_labels(img_path, out):
     files_all = os.listdir(img_path)
@@ -55,7 +58,7 @@ def create_labels(img_path, out):
     labels_df = pd.DataFrame.sort_values(labels_df, by='Filename')
     labels_df['Labeled'] = labels_df['Filename'].apply(is_train)
 
-    out_path = os.path.join(out, 'labels.csv')
+    out_path = os.path.join(out, 'labels_old.csv')
     labels_df.to_csv(out_path, index=None)
 
 
