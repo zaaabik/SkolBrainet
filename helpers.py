@@ -1,12 +1,16 @@
 import nibabel as nib
 import numpy as np
 import torch
-from tqdm import tqdm
 
 
 def loader(path):
     data = nib.load(path)
     img = data.get_fdata()
+    return img
+
+
+def loader_np(path):
+    img = np.load(path)
     return img
 
 
