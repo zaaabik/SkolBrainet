@@ -14,11 +14,11 @@ from helpers import crop, augmentation, loader_np, loader
 
 ######### PARAMETERS
 
-gt_base_path = 'da_gt/'
-img_base_path = 'da_img/'
+# gt_base_path = 'da_gt/'
+# img_base_path = 'da_img/'
 
-# gt_base_path = '/nmnt/media/home/kechua/CC-359-dataset/Silver-standard-ML/'
-# img_base_path = '/nmnt/media/home/kechua/CC-359-dataset/originalScaled/'
+gt_base_path = '/nmnt/media/home/kechua/CC-359-dataset/Silver-standard-ML/'
+img_base_path = '/nmnt/media/home/kechua/CC-359-dataset/originalScaled/'
 
 labels_path = 'labels.csv'
 labeled_domain = 'siemens_15'
