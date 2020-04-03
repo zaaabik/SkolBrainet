@@ -1,6 +1,7 @@
 import nibabel as nib
 import numpy as np
 import torch
+from tqdm import tqdm
 
 
 def loader(path):
@@ -80,7 +81,7 @@ def predict_full(net, img, crop_size=65, mini_crop_size=7, device=torch.device('
     preds = np.zeros_like(img)
     coef = np.zeros_like(img)
 
-    for z in range(0, max_z - crop_size, step_size):
+    for z in tqdm(range(0, max_z - crop_size, step_size)):
         pred_z = z + diff
         for y in range(0, max_y - crop_size, step_size):
             pred_y = y + diff
