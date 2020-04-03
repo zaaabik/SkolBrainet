@@ -77,7 +77,8 @@ def loader_np(path):
 labled_imgs = []
 labled_gts = []
 
-for img_filename, gt_filename in zip(labled_img_filenames, labled_gt_filenames):
+print ('loading labeled images', flush=True)
+for img_filename, gt_filename in tqdm(zip(labled_img_filenames, labled_gt_filenames)):
     gt_path = os.path.join(gt_base_path, gt_filename)
     img_path = os.path.join(img_base_path, img_filename)
 
@@ -90,7 +91,8 @@ for img_filename, gt_filename in zip(labled_img_filenames, labled_gt_filenames):
 unlabled_imgs = []
 unlabled_gts = []
 
-for img_filename in unlabled_img_filenames:
+print ('loading unlabeled images', flush=True)
+for img_filename in tqdm(unlabled_img_filenames):
     img_path = os.path.join(img_base_path, img_filename)
 
     img = loader_np(img_path)
@@ -203,17 +205,17 @@ def __getitem__(self, idx):
     return torch.Tensor(x[None, :, :, :]), torch.Tensor(y[None, :, :, :]), np.array(cat, dtype=np.long)
 
 
-validation_imgs = []
-validation_gts = []
-for img_filename, gt_filename in zip(unlabled_img_filenames, unlabled_gt_filenames):
-    img_path = os.path.join(img_base_path, img_filename)
-    gt_path = os.path.join(gt_base_path, gt_filename)
-
-    img = loader_np(img_path)
-    gt = loader(gt_path)
-
-    validation_imgs.append(img)
-    validation_gts.append(gt)
+# validation_imgs = []
+# validation_gts = []
+# for img_filename, gt_filename in zip(unlabled_img_filenames, unlabled_gt_filenames):
+#     img_path = os.path.join(img_base_path, img_filename)
+#     gt_path = os.path.join(gt_base_path, gt_filename)
+#
+#     img = loader_np(img_path)
+#     gt = loader(gt_path)
+#
+#     validation_imgs.append(img)
+#     validation_gts.append(gt)
 
 
 def validate(model, dataloader):
@@ -231,9 +233,9 @@ def validate(model, dataloader):
     return np.mean(losses)
 
 
-device = torch.device('cpu')
+device = torch.device('cpu', flush=True)
 if torch.cuda.is_available():
-    print('GPU !!!')
+    print('GPU !!!', flush=True)
     device = torch.device('cuda:0')
 
 if not os.path.exists('models'):
@@ -264,11 +266,11 @@ unlabeled_mri_dataset = MriDataset(unlabled_augmentation_imgs, unlabled_augmenta
 
 unlabeled_mri_dataloader = data.DataLoader(unlabeled_mri_dataset, batch_size=categorical_batch_size, shuffle=True)
 
-validate_dataset = MriDataset(validation_imgs, validation_gts,
-                              np.zeros(len(validation_imgs)), crop_size, mini_crop_size,
-                              1000, crop_function=crop)
-
-validate_dataloader = data.DataLoader(validate_dataset, batch_size=batch_size, shuffle=True)
+# validate_dataset = MriDataset(validation_imgs, validation_gts,
+#                               np.zeros(len(validation_imgs)), crop_size, mini_crop_size,
+#                               1000, crop_function=crop)
+#
+# validate_dataloader = data.DataLoader(validate_dataset, batch_size=batch_size, shuffle=True)
 
 total_segmentation_losses = []
 total_classification_losses = []
@@ -321,15 +323,14 @@ for epoch in range(epochs):
     total_segmentation_losses.append(mean_segmentation_loss)
     total_classification_losses.append(mean_classification_losses)
 
-    vall_loss = validate(net, validate_dataloader)
-    total_validation_losses.append(vall_loss)
+    #vall_loss = validate(net, validate_dataloader)
+    #total_validation_losses.append(vall_loss)
     net.eval()
     print(
-        f'Epoch {epoch}: Segmetation loss {mean_segmentation_loss:.5f} Class loss {mean_classification_losses} Val loss : {vall_loss}',
+        f'Epoch {epoch}: Segmetation loss {mean_segmentation_loss:.5f} Class loss {mean_classification_losses}',
         flush=True)
     loss_df = pd.DataFrame({
         'Segmetation loss': total_segmentation_losses,
-        'Classification loss': total_classification_losses,
-        'Val loss': total_validation_losses
+        'Classification loss': total_classification_losses
     })
     loss_df.to_csv('da_v1/models/loss_da.csv', index='Epoch')
