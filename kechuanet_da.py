@@ -19,6 +19,7 @@ from helpers import crop, augmentation, loader_np, loader
 
 gt_base_path = '/nmnt/media/home/kechua/CC-359-dataset/Silver-standard-ML/'
 img_base_path = '/nmnt/media/home/kechua/CC-359-dataset/originalScaled/'
+models_save_path = 'da_v1/models'
 
 labels_path = 'labels.csv'
 labeled_domain = 'siemens_15'
@@ -203,7 +204,7 @@ for epoch in range(epochs):
         del full_y
         del full_c
     if epoch % epochs_per_save == 0:
-        torch.save(net.state_dict(), os.path.join('da_v1/models', f'model_epoch_{epoch:03}'))
+        torch.save(net.state_dict(), os.path.join(models_save_path, f'model_epoch_{epoch:03}'))
 
     mean_segmentation_loss = np.mean(segmentation_losses)
     mean_classification_losses = np.mean(classification_losses)
@@ -221,4 +222,4 @@ for epoch in range(epochs):
         'Segmetation loss': total_segmentation_losses,
         'Classification loss': total_classification_losses
     })
-    loss_df.to_csv('da_v1/models/loss_da.csv', index='Epoch')
+    loss_df.to_csv(os.path.join(models_save_path, 'loss_da.csv'), index='Epoch')
