@@ -72,7 +72,7 @@ def augmentation(imgs, gts):
     return imgs + augmentation_imgs, gts + augmentation_gts
 
 
-def predict_full(net, img, thr=0.5, crop_size=65, mini_crop_size=7, device=torch.device('cpu'), step_size=7):
+def predict_full(net, img, crop_size=65, mini_crop_size=7, device=torch.device('cpu'), step_size=7):
     img = img / img.max()
     diff = crop_size // 2 - mini_crop_size // 2
 
@@ -96,5 +96,5 @@ def predict_full(net, img, thr=0.5, crop_size=65, mini_crop_size=7, device=torch
                 pred_z: pred_z + mini_crop_size] += 1
 
     coef[coef == 0] = 1
-    res = (preds / coef) > thr
+    res = (preds / coef)
     return res
