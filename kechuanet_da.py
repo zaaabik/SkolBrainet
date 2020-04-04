@@ -19,9 +19,9 @@ from helpers import crop, augmentation, loader_np, loader, get_gt_filename
 
 gt_base_path = '/nmnt/x3-hdd/data/DA/CC359/Silver-standard-MLScaled/'
 img_base_path = '/nmnt/x3-hdd/data/DA/CC359/originalScaled/'
-models_save_path = '/nmnt/x3-hdd/data/DA/CC359/models/da2'
+models_save_path = '/nmnt/x3-hdd/data/DA/CC359/models/da2020'
 
-labels_path = 'labels_small_ds.csv'
+labels_path = 'labels.csv'
 labeled_domain = 'siemens_15'
 
 # for debugging !
