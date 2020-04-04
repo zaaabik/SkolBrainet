@@ -153,7 +153,7 @@ labeled_mri_dataloader = data.DataLoader(labeled_mri_dataset, batch_size=batch_s
 
 unlabeled_mri_dataset = MriDatasetWithDomain(unlabeled_augmentation_imgs, unlabeled_augmentation_gts,
                                              unlabeled_augmentation_img_cat, crop_size, mini_crop_size,
-                                             crops_per_image, crop_function=crop)
+                                             crops_per_image, crop_function=crop, fake=True)
 
 unlabeled_mri_dataloader = data.DataLoader(unlabeled_mri_dataset, batch_size=categorical_batch_size, shuffle=True)
 
