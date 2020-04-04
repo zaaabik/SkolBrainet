@@ -10,13 +10,18 @@ def loader(path):
     return img
 
 
+def loader_np(path):
+    img = np.load(path)
+    return img
+
+
 def get_gt_filename(img_filename):
     comma_idx = img_filename.find('.')
     gt_file_name = img_filename[:comma_idx] + '_ss' + img_filename[comma_idx:]
     return gt_file_name
 
 
-def crop(img, gt, voxes_size, mini_voxel_size, start_coordinates):
+def crop(img, gt, voxes_size, mini_voxel_size, start_coordinates, fake=False):
     img_size = np.array(img.shape)
     start_coordinates = np.array(start_coordinates)
 
@@ -29,6 +34,8 @@ def crop(img, gt, voxes_size, mini_voxel_size, start_coordinates):
                   start_coordinates[1]:end_coordinates[1],
                   start_coordinates[2]:end_coordinates[2]
                   ]
+    if fake:
+        return cropped_img, 9
 
     assert np.all(np.array(cropped_img.shape) == voxes_size)
 
@@ -47,7 +54,7 @@ def crop(img, gt, voxes_size, mini_voxel_size, start_coordinates):
     return cropped_img, cropped_gt
 
 
-def augmentation(imgs, gts):
+def augmentation(imgs, gts, fake=False):
     augmentation_imgs = []
     augmentation_gts = []
 
@@ -55,15 +62,19 @@ def augmentation(imgs, gts):
         augmentation_imgs.append(
             imgs[idx][:, :, ::-1].copy()
         )
-
-        augmentation_gts.append(
-            gts[idx][:, :, ::-1].copy()
-        )
+        if fake:
+            augmentation_gts.append(
+                gts[idx]
+            )
+        else:
+            augmentation_gts.append(
+                gts[idx][:, :, ::-1].copy()
+            )
 
     return imgs + augmentation_imgs, gts + augmentation_gts
 
 
-def predict_full(net, img, thr=0.5, crop_size=65, mini_crop_size=7, device=torch.device('cpu'), step_size=7):
+def predict_full(net, img, crop_size=65, mini_crop_size=7, device=torch.device('cpu'), step_size=7):
     img = img / img.max()
     diff = crop_size // 2 - mini_crop_size // 2
 
@@ -71,7 +82,7 @@ def predict_full(net, img, thr=0.5, crop_size=65, mini_crop_size=7, device=torch
     preds = np.zeros_like(img)
     coef = np.zeros_like(img)
 
-    for z in range(0, max_z - crop_size, step_size):
+    for z in tqdm(range(0, max_z - crop_size, step_size)):
         pred_z = z + diff
         for y in range(0, max_y - crop_size, step_size):
             pred_y = y + diff
@@ -87,5 +98,5 @@ def predict_full(net, img, thr=0.5, crop_size=65, mini_crop_size=7, device=torch
                 pred_z: pred_z + mini_crop_size] += 1
 
     coef[coef == 0] = 1
-    res = (preds / coef) > thr
+    res = (preds / coef)
     return res
