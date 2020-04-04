@@ -91,7 +91,7 @@ for img_filename in tqdm(unlabeled_img_filenames):
 
     img = loader_np(img_path)
     # zeros!
-    gt = np.zeros_like(img)
+    gt = 0
 
     unlabled_imgs.append(img)
     unlabled_gts.append(gt)
@@ -181,15 +181,15 @@ for epoch in range(epochs):
         labeled_data_size = len(x)
 
         full_x = torch.cat((x, unl_x)).to(device)
-        full_y = torch.cat((y, unl_y)).to(device)
+        full_y = y.to(device)
         full_c = torch.cat((c, unl_c)).to(device)
 
         segmentation, classification = net(full_x)
 
-        segmentation_loss = segmentation_criterion(segmentation, full_y)
+        segmentation_loss = segmentation_criterion(segmentation[:labeled_data_size], full_y)
 
         # set loss to there for unlabled_data
-        segmentation_loss = segmentation_loss[:labeled_data_size].mean()
+        segmentation_loss = segmentation_loss.mean()
 
         classification_loss = classification_criterion(classification, full_c)
 

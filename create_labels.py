@@ -1,6 +1,7 @@
 import argparse
 import os
 import re
+
 import numpy as np
 import pandas as pd
 
@@ -19,23 +20,20 @@ def is_train(file_name):
     return False
 
 
-def inTestSet (name):
+def inTestSet(name):
     # Here I specify the test domain
     N = int(name[2:6])
-    Ph15_t = np.arange(50,60)
-    Ph3_t = np.arange(110,120)
-    S15_t = np.arange(170,180)
-    S3_t = np.arange(230,240)
-    GE15_t = np.arange(290,300)
+    Ph15_t = np.arange(50, 60)
+    Ph3_t = np.arange(110, 120)
+    S15_t = np.arange(170, 180)
+    S3_t = np.arange(230, 240)
+    GE15_t = np.arange(290, 300)
     GE3_t = np.arange(350, 360)
     test_scans = np.concatenate((Ph15_t, Ph3_t, S15_t, S3_t, GE15_t, GE3_t))
     if N in test_scans:
         return True
     else:
         return False
-
-def trueStep (name):
-
 
 
 def create_labels(img_path, out):
