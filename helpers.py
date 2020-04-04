@@ -52,7 +52,7 @@ def crop(img, gt, voxes_size, mini_voxel_size, start_coordinates):
     return cropped_img, cropped_gt
 
 
-def augmentation(imgs, gts):
+def augmentation(imgs, gts, fake=False):
     augmentation_imgs = []
     augmentation_gts = []
 
@@ -60,10 +60,14 @@ def augmentation(imgs, gts):
         augmentation_imgs.append(
             imgs[idx][:, :, ::-1].copy()
         )
-
-        augmentation_gts.append(
-            gts[idx][:, :, ::-1].copy()
-        )
+        if fake:
+            augmentation_gts.append(
+                gts
+            )
+        else:
+            augmentation_gts.append(
+                gts[idx][:, :, ::-1].copy()
+            )
 
     return imgs + augmentation_imgs, gts + augmentation_gts
 

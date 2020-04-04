@@ -142,7 +142,7 @@ optimizer = optim.Adam(net.parameters(), lr=lr)  # lr = 1e-5 in the original pap
 labeled_augmentation_imgs, labeled_augmentation_gts = augmentation(labeled_imgs, labeled_gts)
 labeled_augmentation_img_cat = np.repeat(labeled_img_cat, 2)
 
-unlabeled_augmentation_imgs, unlabeled_augmentation_gts = augmentation(unlabled_imgs, unlabled_gts)
+unlabeled_augmentation_imgs, unlabeled_augmentation_gts = augmentation(unlabled_imgs, unlabled_gts, fake=True)
 unlabeled_augmentation_img_cat = np.repeat(unlabeled_img_cat, 2)
 
 labeled_mri_dataset = MriDatasetWithDomain(labeled_augmentation_imgs, labeled_augmentation_gts,
