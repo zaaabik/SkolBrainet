@@ -100,3 +100,31 @@ def predict_full(net, img, crop_size=65, mini_crop_size=7, device=torch.device('
     coef[coef == 0] = 1
     res = (preds / coef)
     return res
+
+
+def predict_full_da(net, img, crop_size=65, mini_crop_size=7, device=torch.device('cpu'), step_size=7):
+    img = img / img.max()
+    diff = crop_size // 2 - mini_crop_size // 2
+
+    max_x, max_y, max_z = img.shape
+    preds = np.zeros_like(img)
+    coef = np.zeros_like(img)
+    for z in tqdm(range(0, max_z - crop_size, step_size)):
+        pred_z = z + diff
+        for y in range(0, max_y - crop_size, step_size):
+            pred_y = y + diff
+            for x in range(0, max_x - crop_size, step_size):
+                pred_x = x + diff
+
+                vis_x, vis_y = crop(img, img, crop_size, mini_crop_size, (x, y, z))
+                output, _ = net(torch.Tensor(vis_x[None, None, :, :, :]).to(device))
+                output = output[0, 0].data.cpu().numpy()
+                preds[pred_x:pred_x + mini_crop_size, pred_y:pred_y + mini_crop_size,
+                pred_z: pred_z + mini_crop_size] += output
+
+                coef[pred_x:pred_x + mini_crop_size, pred_y:pred_y + mini_crop_size,
+                pred_z: pred_z + mini_crop_size] += 1
+
+    coef[coef == 0] = 1
+    res = (preds / coef)
+    return res
