@@ -62,7 +62,7 @@ def augmentation(imgs, gts, fake=False):
         )
         if fake:
             augmentation_gts.append(
-                gts
+                gts[idx]
             )
         else:
             augmentation_gts.append(
