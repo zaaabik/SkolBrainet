@@ -55,7 +55,7 @@ class MriDataset(data.Dataset):
 
 
 class MriDatasetWithDomain(data.Dataset):
-    def __init__(self, X, y, cat, crop_size, mini_crop_size, crops_per_image, crop_function):
+    def __init__(self, X, y, cat, crop_size, mini_crop_size, crops_per_image, crop_function, fake=False):
         super(MriDataset)
         self.X = [x / x.max() for x in X]
         self.y = y
@@ -66,6 +66,7 @@ class MriDatasetWithDomain(data.Dataset):
         self.crops_per_image = crops_per_image
         self.crop_function = crop_function
         self.crops, self.img_idxs, self.img_cats = self.create_crops()
+        self.fake = fake
 
     def create_crops(self):
         crops = []
@@ -98,6 +99,7 @@ class MriDatasetWithDomain(data.Dataset):
         img = self.X[self.img_idxs[idx]]
         gt = self.y[self.img_idxs[idx]]
         cat = self.img_cats[idx]
-        x, y = self.crop_function(img, gt, self.crop_size, self.mini_crop_size, crop)
-
-        return torch.Tensor(x[None, :, :, :]), torch.Tensor(y[None, :, :, :]), np.array(cat, dtype=np.int64)
+        x, y = self.crop_function(img, gt, self.crop_size, self.mini_crop_size, crop, self.fake)
+        if not self.fake:
+            return torch.Tensor(x[None, :, :, :]), torch.Tensor(y[None, :, :, :]), np.array(cat, dtype=np.int64)
+        return torch.Tensor(x[None, :, :, :]), 0, np.array(cat, dtype=np.int64)

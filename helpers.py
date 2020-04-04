@@ -21,7 +21,7 @@ def get_gt_filename(img_filename):
     return gt_file_name
 
 
-def crop(img, gt, voxes_size, mini_voxel_size, start_coordinates):
+def crop(img, gt, voxes_size, mini_voxel_size, start_coordinates, fake=False):
     img_size = np.array(img.shape)
     start_coordinates = np.array(start_coordinates)
 
@@ -34,6 +34,8 @@ def crop(img, gt, voxes_size, mini_voxel_size, start_coordinates):
                   start_coordinates[1]:end_coordinates[1],
                   start_coordinates[2]:end_coordinates[2]
                   ]
+    if fake:
+        return cropped_img, 9
 
     assert np.all(np.array(cropped_img.shape) == voxes_size)
 
