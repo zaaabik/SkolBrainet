@@ -189,7 +189,7 @@ for epoch in range(epochs):
         segmentation_loss = segmentation_criterion(segmentation, full_y)
 
         # set loss to there for unlabled_data
-        segmentation_loss = segmentation_loss[labeled_data_size:].mean()
+        segmentation_loss = segmentation_loss[:labeled_data_size].mean()
 
         classification_loss = classification_criterion(classification, full_c)
 
