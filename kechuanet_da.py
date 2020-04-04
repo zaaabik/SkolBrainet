@@ -31,11 +31,12 @@ alpha = 1
 batch_size = 4
 epochs = 100000000
 crops_per_image = 250
+#crops_per_unl =
 lr = 1e-5
 lmbd = 0.1
 epochs_per_save = 1
 
-categorical_batch_size = 4 * 5
+categorical_batch_size = 4 * 3
 
 crop_size = 65
 mini_crop_size = 7
