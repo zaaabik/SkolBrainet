@@ -6,8 +6,7 @@ from tqdm import tqdm
 
 
 def loader(path):
-    data = nib.load(path)
-    img = data.get_fdata()
+    img = np.load(path)
     return img
 
 
