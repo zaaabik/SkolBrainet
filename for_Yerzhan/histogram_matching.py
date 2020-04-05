@@ -2,8 +2,11 @@ import nibabel as nib
 import matplotlib.pyplot as plt
 import os
 import numpy as np
+from tqdm import tqdm
 
-path = '../da_img/'
+path = '/nmnt/x3-hdd/data/DA/CC359/originalScaled/'
+new_path = '/nmnt/x3-hdd/data/DA/CC359/originalScMatched/'
+domain = 'siemens_15'
 
 #Taken from open source github
 def _match_cumulative_cdf(source, template):
@@ -28,35 +31,39 @@ def _match_cumulative_cdf(source, template):
 def load_imgs(domain):
     domain_imgs = []
 
-    for file in os.listdir(path):
+    for file in tqdm(os.listdir(path)):
         if domain in file:
-            img = nib.load(path+file)
-            data = img.get_fdata()
+            #Solution for the case of .nii.gz files was commented
+            # img = nib.load(path+file)
+            # data = img.get_fdata()
+            data = np.load(path+file) #for .npy case
             flat = data.flatten()
             flat /= np.amax(flat)    # normalizing
             domain_imgs.append(flat)
 
     return domain_imgs
 
-domain = 'philips_3'
-imgs = load_imgs('philips_3')
+print ('loading target domain images')
+imgs = load_imgs(domain)
+print ('loaded target domain images')
 merged = np.concatenate(imgs)
 
-print(len(np.unique(imgs[0])))     # number of unique elements in the image
-print(len(np.unique(imgs[1])))    # then number of unique elements in the merged image
-print(len(np.unique(merged)))    # to make sure we concatenate arrays correctly
+# print(len(np.unique(imgs[0])))     # number of unique elements in the image
+# print(len(np.unique(imgs[1])))    # then number of unique elements in the merged image
+# print(len(np.unique(merged)))    # to make sure we concatenate arrays correctly
 
 template = merged
-new_path = '../da_img_matched/'
 
-for file in os.listdir(path):
+for file in tqdm(os.listdir(path)):
     if domain not in file:
-        image = nib.load(path + file)
-        data = image.get_fdata()
+        # image = nib.load(path + file)
+        # data = image.get_fdata()
+        data = np.load(path + file)  # for .npy case
         matched_image = _match_cumulative_cdf(data, template)
 
-        np.save(os.path.join(new_path, 'matched_'+file.replace('.nii.gz', '')), matched_image)
-        print('saved')
+        # np.save(os.path.join(new_path, 'matched_'+file.replace('.nii.gz', '')), matched_image)
+        np.save(os.path.join(new_path, 'matched_' + file), matched_image)
+        # print('saved')
 
 
 # yeah = np.load(new_path+'matched_CC0120_siemens_15_58_F.npy')
