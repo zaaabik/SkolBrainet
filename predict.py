@@ -30,7 +30,7 @@ def get_files(file_names):
     return imgs
 
 
-def predict(model_path, df_path, da):
+def predict(model_path, df_path, da, out):
     print(f'Labels {df_path}', flush=True)
     print(f'Model {model_path}', flush=True)
     print(f'Domain adaptation {da}', flush=True)
@@ -42,10 +42,10 @@ def predict(model_path, df_path, da):
 
     model_filename = os.path.basename(model_path)
     if da:
-        full_path = os.path.join('predictions', 'da', model_filename)
+        full_path = out
         net = DANet(1).to(device)
     else:
-        full_path = os.path.join('predictions', 'without_da', model_filename)
+        full_path = out
         net = Net().to(device)
 
     if not os.path.exists(full_path):
@@ -73,7 +73,7 @@ def predict(model_path, df_path, da):
             full_predict = predict_full(net, padded_img, crop_size=crop_size, mini_crop_size=mini_crop_size,
                                         step_size=7,
                                         device=device)
-        save_path = os.path.join(full_path, + img_filename[:-7] + '.npy')
+        save_path = os.path.join(full_path, img_filename')
         np.save(save_path, full_predict)
 
 
@@ -82,6 +82,7 @@ if __name__ == '__main__':
         description='Script for create prediction')
     parser.add_argument('--model', type=str, help='Path to model')
     parser.add_argument('--labels', type=str, help='Path to csv')
+    parser.add_argument('--out', type=str, help='Out path')
     parser.add_argument('--da',
                         action='store_true',
                         help='This is a boolean flag.',
@@ -91,5 +92,6 @@ if __name__ == '__main__':
     da = args.da
     model = args.model
     labels = args.labels
+    out = args.out
 
     predict(model_path=model, df_path=labels, da=da)
