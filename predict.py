@@ -9,7 +9,7 @@ from tqdm import tqdm
 from Net import Net, DANet
 from helpers import loader, predict_full, predict_full_da
 
-base_dir = '/nmnt/x3-hdd/data/DA/CC359/originalScaled'
+#base_dir = '/nmnt/x3-hdd/data/DA/CC359/originalScaled'
 
 batch_size = 4
 epochs = 100000000
@@ -21,7 +21,8 @@ crop_size = 65
 mini_crop_size = 7
 
 
-def get_files(file_names):
+def get_files(file_names, base_dir):
+    base_dir = base_dir
     imgs = []
     for img_filename in file_names:
         img_path = os.path.join(base_dir, img_filename)
@@ -30,7 +31,9 @@ def get_files(file_names):
     return imgs
 
 
-def predict(model_path, df_path, da, out):
+def predict(model_path, df_path, da, out, base_dir):
+    base_dir = base_dir
+
     print(f'Labels {df_path}', flush=True)
     print(f'Model {model_path}', flush=True)
     print(f'Domain adaptation {da}', flush=True)
@@ -53,7 +56,7 @@ def predict(model_path, df_path, da, out):
 
     files_df = pd.read_csv(df_path)
     files_names = files_df.Filename
-    imgs = get_files(files_names)
+    imgs = get_files(files_names, base_dir)
 
     net.load_state_dict(torch.load(model_path, map_location=device))
     net.to(device)
@@ -83,6 +86,7 @@ if __name__ == '__main__':
     parser.add_argument('--model', type=str, help='Path to model')
     parser.add_argument('--labels', type=str, help='Path to csv')
     parser.add_argument('--out', type=str, help='Out path')
+    parser.add_argument('--data', type=str, help='original data')
     parser.add_argument('--da',
                         action='store_true',
                         help='This is a boolean flag.',
@@ -92,6 +96,7 @@ if __name__ == '__main__':
     da = args.da
     model = args.model
     labels = args.labels
+    data = args.data
     out = args.out
 
-    predict(model_path=model, df_path=labels, da=da, out=out)
+    predict(model_path=model, df_path=labels, da=da, out=out, base_dir=data)
