@@ -94,4 +94,4 @@ if __name__ == '__main__':
     labels = args.labels
     out = args.out
 
-    predict(model_path=model, df_path=labels, da=da)
+    predict(model_path=model, df_path=labels, da=da, out=out)
