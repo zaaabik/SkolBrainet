@@ -52,7 +52,7 @@ def predict(model_path, df_path, da):
         os.makedirs(full_path)
 
     files_df = pd.read_csv(df_path)
-    files_names = files_df.files
+    files_names = files_df.Filename
     imgs = get_files(files_names)
 
     net.load_state_dict(torch.load(model_path, map_location=device))
