@@ -73,7 +73,7 @@ def predict(model_path, df_path, da, out):
             full_predict = predict_full(net, padded_img, crop_size=crop_size, mini_crop_size=mini_crop_size,
                                         step_size=7,
                                         device=device)
-        save_path = os.path.join(full_path, img_filename')
+        save_path = os.path.join(full_path, img_filename)
         np.save(save_path, full_predict)
 
 
