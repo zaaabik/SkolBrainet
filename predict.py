@@ -48,6 +48,9 @@ def predict(model_path, df_path, da):
         full_path = os.path.join('predictions', 'without_da', model_filename)
         net = Net().to(device)
 
+    if not os.path.exists(full_path):
+        os.makedirs(full_path)
+
     files_df = pd.read_csv(df_path)
     files_names = files_df.files
     imgs = get_files(files_names)
