@@ -12,8 +12,8 @@ from Dataset import MriDataset
 from Net import Net, DANet
 from helpers import get_gt_filename, loader, crop
 
-gt_base_path = '/nmnt/media/home/kechua/CC-359-dataset/Silver-standard-ML'
-img_base_path = '/nmnt/media/home/kechua/CC-359-dataset/Original'
+gt_base_path = '/nmnt/x3-hdd/data/DA/CC359/Silver-standard-MLScaled'
+img_base_path = '/nmnt/x3-hdd/data/DA/CC359/originalScaled'
 
 
 def get_loss_da(net, dataloader, criterion, device):
@@ -53,11 +53,11 @@ def validate(model_path, labels_df, da, out, epochs):
         device = torch.device('cuda:0')
     if da:
         print('DA on')
-        full_path = os.path.join('validations', 'da', out)
+        full_path = out
         net = DANet(1).to(device)
     else:
         print('DA off')
-        full_path = os.path.join('validations', 'without_da', out)
+        full_path = out
         net = Net().to(device)
 
     if not os.path.exists(full_path):
