@@ -6,6 +6,7 @@ import pandas as pd
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
+from tqdm import tqdm
 
 from Dataset import MriDataset
 from Net import Net, DANet
@@ -16,7 +17,7 @@ img_base_path = '/nmnt/media/home/kechua/CC-359-dataset/Original'
 
 
 def get_loss_da(net, dataloader, criterion, device):
-    model.eval()
+    net.eval()
     losses = []
     for (x, y) in dataloader:
         x, y = x.to(device), y.to(device)
@@ -29,7 +30,7 @@ def get_loss_da(net, dataloader, criterion, device):
 
 
 def get_loss(net, dataloader, criterion, device):
-    model.eval()
+    net.eval()
     losses = []
     for (x, y) in dataloader:
         x, y = x.to(device), y.to(device)
@@ -50,17 +51,21 @@ def validate(model_path, labels_df, da, out, epochs):
     if torch.cuda.is_available():
         print('GPU !!!')
         device = torch.device('cuda:0')
-
     if da:
+        print('DA on')
         full_path = os.path.join('validations', 'da', out)
         net = DANet(1).to(device)
     else:
+        print('DA off')
         full_path = os.path.join('validations', 'without_da', out)
         net = Net().to(device)
-    train = True
+
+    if not os.path.exists(full_path):
+        os.makedirs(full_path)
 
     labels_df = pd.read_csv(labels_df)
-    img_filenames = labels_df.files
+    img_filenames = labels_df.Filename
+    print(img_filenames)
 
     ##
 
@@ -120,21 +125,21 @@ def validate(model_path, labels_df, da, out, epochs):
 
     total_epochs = []
     total_loss = []
-    for epoch in epochs:
+    for epoch in tqdm(epochs, desc='Epoch'):
         model_filename = get_model_filename(epoch)
         net_path = os.path.join(model_path, model_filename)
         net.load_state_dict(torch.load(net_path, map_location=device))
         cur_loss = get_loss(net, mri_dataloader, criterion, device)
 
         total_loss.append(cur_loss)
-        total_epochs.append(epochs)
+        total_epochs.append(epoch)
 
         loss_df = pd.DataFrame({
             'Epoch': total_epochs,
             'Loss': total_loss
         })
         save_loss_path = os.path.join(full_path, 'loss.csv')
-        loss_df.to_csv(save_loss_path)
+        loss_df.to_csv(save_loss_path, index=None)
 
 
 if __name__ == '__main__':
@@ -146,7 +151,7 @@ if __name__ == '__main__':
     parser.add_argument('--da',
                         action='store_true',
                         help='This is a boolean flag.',
-                        default='False')
+                        default=False)
     parser.add_argument('--epochs', nargs='+', type=int)
 
     args = parser.parse_args()
@@ -155,4 +160,7 @@ if __name__ == '__main__':
     labels = args.labels
     out = args.out
     epochs = args.epochs
+    print(epochs, flush=True)
+    print(f'Da {da}')
+
     validate(model, labels, da, out, epochs)
