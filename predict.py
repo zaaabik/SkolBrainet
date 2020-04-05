@@ -9,7 +9,7 @@ from tqdm import tqdm
 from Net import Net, DANet
 from helpers import loader, predict_full, predict_full_da
 
-base_dir  = '/nmnt/x3-hdd/data/DA/CC359/originalScaled'
+base_dir = '/nmnt/x3-hdd/data/DA/CC359/originalScaled'
 
 batch_size = 4
 epochs = 100000000
@@ -62,7 +62,7 @@ def predict(model_path, df_path, da, out):
     padding = crop_size // 2
     pad = ((padding, padding), (padding, padding), (padding, padding))
 
-    for img, img_filename in tqdm(zip(imgs, files_names)):
+    for img, img_filename in tqdm(zip(imgs, files_names), desc='Image', total=len(imgs)):
         padded_img = np.pad(img, pad)
 
         if da:
