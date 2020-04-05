@@ -130,9 +130,9 @@ def validate(model_path, labels_df, da, out, epochs):
         net_path = os.path.join(model_path, model_filename)
         net.load_state_dict(torch.load(net_path, map_location=device))
         if da:
-            cur_loss = get_loss(net, mri_dataloader, criterion, device)
-        else:
             cur_loss = get_loss_da(net, mri_dataloader, criterion, device)
+        else:
+            cur_loss = get_loss(net, mri_dataloader, criterion, device)
 
         total_loss.append(cur_loss)
         total_epochs.append(epoch)
