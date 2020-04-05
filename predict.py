@@ -82,7 +82,7 @@ if __name__ == '__main__':
     parser.add_argument('--da',
                         action='store_true',
                         help='This is a boolean flag.',
-                        default='False')
+                        default=False)
 
     args = parser.parse_args()
     da = args.da
