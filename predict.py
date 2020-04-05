@@ -21,14 +21,11 @@ crop_size = 65
 mini_crop_size = 7
 
 
-def get_files(file_names, base_dir):
+def get_file(file_names, base_dir):
     base_dir = base_dir
-    imgs = []
-    for img_filename in file_names:
-        img_path = os.path.join(base_dir, img_filename)
-        img = loader(img_path)
-        imgs.append(img)
-    return imgs
+    img_path = os.path.join(base_dir, file_names)
+    img = loader(img_path)
+    return img
 
 
 def predict(model_path, df_path, da, out, base_dir):
@@ -56,7 +53,6 @@ def predict(model_path, df_path, da, out, base_dir):
 
     files_df = pd.read_csv(df_path)
     files_names = files_df.Filename
-    imgs = get_files(files_names, base_dir)
 
     net.load_state_dict(torch.load(model_path, map_location=device))
     net.to(device)
@@ -65,7 +61,8 @@ def predict(model_path, df_path, da, out, base_dir):
     padding = crop_size // 2
     pad = ((padding, padding), (padding, padding), (padding, padding))
 
-    for img, img_filename in tqdm(zip(imgs, files_names), desc='Image', total=len(imgs)):
+    for img_filename in tqdm(files_names, desc='Image'):
+        img = get_file(img_filename, base_dir)
         padded_img = np.pad(img, pad)
 
         if da:
