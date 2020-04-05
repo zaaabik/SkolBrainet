@@ -9,7 +9,7 @@ from tqdm import tqdm
 from Net import Net, DANet
 from helpers import loader, predict_full, predict_full_da
 
-base_dir = './'
+base_dir = '/nmnt/x3-hdd/data/DA/CC359/Silver-standard-MLScaled'
 
 batch_size = 4
 epochs = 100000000
