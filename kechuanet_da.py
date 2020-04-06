@@ -21,7 +21,7 @@ gt_base_path = '/nmnt/x3-hdd/data/DA/CC359/Silver-standard-MLScaled/'
 img_base_path = '/nmnt/x3-hdd/data/DA/CC359/originalScaled/'
 models_save_path = '/nmnt/x3-hdd/data/DA/CC359/models/da2020'
 
-labels_path = 'labels.csv'
+labels_path = 'labels5050train.csv'
 labeled_domain = 'siemens_15'
 
 # for debugging !

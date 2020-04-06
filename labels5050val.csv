@@ -1,0 +1,11 @@
+Filename,Domain,Labeled
+CC0011_philips_15_49_F.npy,philips_15,False
+CC0012_philips_15_43_M.npy,philips_15,False
+CC0070_philips_3_80_F.npy,philips_3,False
+CC0071_philips_3_56_M.npy,philips_3,False
+CC0190_siemens_3_63_F.npy,siemens_3,False
+CC0191_siemens_3_59_F.npy,siemens_3,False
+CC0250_ge_15_60_F.npy,ge_15,False
+CC0251_ge_15_41_M.npy,ge_15,False
+CC0310_ge_3_51_F.npy,ge_3,False
+CC0311_ge_3_50_M.npy,ge_3,False
